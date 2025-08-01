@@ -1,41 +1,100 @@
 const express = require("express");
 const router = express.Router();
 const Intern = require("../models/intern");
-const Contact = require("../models/contact");
+const bcrypt = require("bcryptjs");
 
-// Get intern data
-router.get("/", async (req, res) => {
+// Signup new intern
+router.post("/signup", async (req, res) => {
   try {
-    let intern = await Intern.findOne();
+    const { name, email, password, referralCode } = req.body;
 
-    if (!intern) {
-      intern = new Intern();
-      intern.unlockBadges();
-      await intern.save();
+    // Check if user already exists
+    const existingUser = await Intern.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "Email already registered" });
     }
 
-    res.json(intern);
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Create new intern
+    const newIntern = new Intern({
+      name,
+      email,
+      password: hashedPassword,
+      referredBy: referralCode || null,
+    });
+
+    // Save new intern first to generate their referral code
+    await newIntern.save();
+
+    // Handle referral if code was provided
+    if (referralCode) {
+      const referrer = await Intern.findOne({ referralCode });
+      if (referrer) {
+        // Update referrer's stats
+        referrer.amountRaised += 500;
+        referrer.referralsCount += 1;
+        await referrer.save();
+      }
+    }
+
+    // Return user data without password
+    const userData = newIntern.toObject();
+    delete userData.password;
+
+    res.status(201).json(userData);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error("Signup error:", err);
+    res.status(500).json({ message: "Server error" });
   }
 });
 
-// Simulate referral
-router.post("/referral", async (req, res) => {
+// Login intern
+router.post("/login", async (req, res) => {
   try {
-    let intern = await Intern.findOne();
+    const { email, password } = req.body;
 
+    // Find user by email
+    const intern = await Intern.findOne({ email });
     if (!intern) {
-      intern = new Intern();
+      return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    // Increase amount raised
-    intern.amountRaised += 500;
+    // Verify password exists
+    if (!intern.password) {
+      return res.status(401).json({
+        message: "Password not set for this account",
+      });
+    }
 
-    // Unlock badges based on new amount
-    intern.unlockBadges();
+    // Compare passwords
+    const isMatch = await bcrypt.compare(password, intern.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
 
-    await intern.save();
+    // Return user data without password
+    const userData = intern.toObject();
+    delete userData.password;
+
+    res.json(userData);
+  } catch (err) {
+    console.error("Login error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Get intern data
+router.get("/:id", async (req, res) => {
+  try {
+    const intern = await Intern.findById(req.params.id).select("-password");
+
+    if (!intern) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
     res.json(intern);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -43,12 +102,12 @@ router.post("/referral", async (req, res) => {
 });
 
 // Get leaderboard
-router.get("/leaderboard", async (req, res) => {
+router.get("/leaderboard/top", async (req, res) => {
   try {
     const leaderboard = await Intern.find()
       .sort({ amountRaised: -1 })
       .limit(10)
-      .select("name amountRaised referralCode");
+      .select("name amountRaised referralCode referralsCount");
 
     res.json(leaderboard);
   } catch (err) {
@@ -61,17 +120,18 @@ router.post("/contact", async (req, res) => {
   try {
     const { name, email, message, userId } = req.body;
 
-    const newContact = new Contact({
-      name,
-      email,
-      message,
-      userId,
-    });
+    // In a real app, we'd save to a Contact collection
+    console.log("Contact form submission:", { name, email, message, userId });
 
-    await newContact.save();
-    res.status(201).json({ message: "Contact form submitted successfully" });
+    res.status(201).json({
+      success: true,
+      message: "Message received! We'll contact you soon.",
+    });
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(500).json({
+      success: false,
+      message: "Failed to send message. Please try again.",
+    });
   }
 });
 

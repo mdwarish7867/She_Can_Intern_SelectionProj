@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -9,6 +11,7 @@ const Contact = () => {
     message: "",
   });
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -28,15 +31,18 @@ const Contact = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
       const contactData = {
         ...formData,
-        userId: user?.id || null,
+        userId: user?._id || null,
       };
 
       await axios.post("http://localhost:5000/api/contact", contactData);
+
       setSubmitted(true);
+      toast.success("Message sent successfully!");
 
       // Reset form after submission
       if (!user) {
@@ -44,16 +50,17 @@ const Contact = () => {
       } else {
         setFormData((prev) => ({ ...prev, message: "" }));
       }
-
-      // Reset submission status after 3 seconds
-      setTimeout(() => setSubmitted(false), 3000);
     } catch (error) {
+      toast.error("Failed to send message. Please try again.");
       console.error("Error submitting form:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-50 py-16">
+      <ToastContainer position="top-right" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h1 className="text-4xl font-extrabold text-gray-900 mb-4">
@@ -69,12 +76,6 @@ const Contact = () => {
             <h2 className="text-2xl font-bold text-gray-900 mb-6">
               Send us a message
             </h2>
-
-            {submitted && (
-              <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6 animate-fadeIn">
-                Thank you! Your message has been sent successfully.
-              </div>
-            )}
 
             <form onSubmit={handleSubmit}>
               {!user && (
@@ -140,14 +141,107 @@ const Contact = () => {
 
               <button
                 type="submit"
-                className="w-full bg-indigo-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-indigo-700 transition duration-300 transform hover:-translate-y-0.5"
+                disabled={loading}
+                className="w-full bg-indigo-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-indigo-700 transition duration-300 transform hover:-translate-y-0.5 disabled:opacity-50"
               >
-                Send Message
+                {loading ? "Sending..." : "Send Message"}
               </button>
             </form>
           </div>
 
-          {/* Contact info remains the same */}
+          <div>
+            <div className="bg-white rounded-3xl shadow-lg p-8 mb-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                Contact Information
+              </h2>
+
+              <div className="space-y-6">
+                <div className="flex items-start">
+                  <div className="flex-shrink-0 bg-indigo-100 p-3 rounded-lg">
+                    <svg
+                      className="h-6 w-6 text-indigo-600"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                      />
+                    </svg>
+                  </div>
+                  <div className="ml-4">
+                    <h3 className="text-lg font-medium text-gray-900">Email</h3>
+                    <p className="mt-1 text-gray-600">
+                      contact@shecanfoundation.org
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start">
+                  <div className="flex-shrink-0 bg-indigo-100 p-3 rounded-lg">
+                    <svg
+                      className="h-6 w-6 text-indigo-600"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                      />
+                    </svg>
+                  </div>
+                  <div className="ml-4">
+                    <h3 className="text-lg font-medium text-gray-900">Phone</h3>
+                    <p className="mt-1 text-gray-600">+91 98765 43210</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start">
+                  <div className="flex-shrink-0 bg-indigo-100 p-3 rounded-lg">
+                    <svg
+                      className="h-6 w-6 text-indigo-600"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                    </svg>
+                  </div>
+                  <div className="ml-4">
+                    <h3 className="text-lg font-medium text-gray-900">
+                      Address
+                    </h3>
+                    <p className="mt-1 text-gray-600">
+                      123 Empowerment Street
+                      <br />
+                      Mumbai, Maharashtra 400001
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gray-200 border-2 border-dashed rounded-xl w-full h-80 flex items-center justify-center text-gray-500">
+              <p>Map Location</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
