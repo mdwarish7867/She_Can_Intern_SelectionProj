@@ -34,11 +34,11 @@ const AdminDashboard = () => {
   const fetchUsers = async () => {
     try {
       const response = await adminApi.get("/users");
-      console.log("Users data:", response.data); // For debugging
+      console.log("Users data:", response.data);
       setUsers(response.data);
       return response.data;
     } catch (err) {
-      toast.error("Failed to fetch users");
+      console.error("Failed to fetch users:", err);
       return [];
     }
   };
@@ -73,7 +73,7 @@ const AdminDashboard = () => {
     }
   };
 
-  // Build referral tree structure
+  // Build referral tree structure - FIXED VERSION
   const buildReferralTree = (users) => {
     const userMap = {};
     const tree = [];
@@ -81,33 +81,41 @@ const AdminDashboard = () => {
     // Create a map of users by their ID
     users.forEach((user) => {
       userMap[user._id] = {
-        ...user.toObject(), // Convert mongoose document to plain object
+        ...user,
         children: [],
       };
     });
 
-    // Build the tree structure
+    // Build the tree structure - FIXED REFERRER HANDLING
     users.forEach((user) => {
-      if (user.referrer && userMap[user.referrer._id]) {
-        userMap[user.referrer._id].children.push(userMap[user._id]);
+      // Handle both string IDs and populated referrer objects
+      const referrerId = user.referrer?._id || user.referrer;
+
+      if (referrerId && userMap[referrerId]) {
+        userMap[referrerId].children.push(userMap[user._id]);
       } else {
         tree.push(userMap[user._id]);
       }
     });
 
     setReferralTree(tree);
-    console.log("Referral tree built:", tree); // For debugging
+    console.log("Fixed referral tree:", tree);
   };
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        await fetchReferralTree();
+        // Fetch users first for the referral tree
+        const users = await fetchUsers();
+        console.log("Fetched users for tree:", users);
+        buildReferralTree(users);
+
+        // Then fetch other data
         await fetchContacts();
         await fetchLeaderboard();
       } catch (err) {
-        toast.error("Failed to load data");
+        console.error("Data fetch error:", err);
       } finally {
         setLoading(false);
       }
@@ -190,31 +198,33 @@ const AdminDashboard = () => {
 
   // Render referral tree recursively
   const renderTree = (node, depth = 0) => {
+    if (!node) return null;
+
     return (
       <div key={node._id} className="relative pl-6 mt-3">
         {/* Vertical line */}
         {depth > 0 && (
-          <div className="absolute left-0 top-0 bottom-0 w-px bg-gray-300"></div>
+          <div className="absolute top-0 bottom-0 left-0 w-px bg-gray-300"></div>
         )}
 
         {/* Node */}
         <div className={`flex items-start ${depth > 0 ? "ml-4" : ""}`}>
           {/* Horizontal line */}
           {depth > 0 && (
-            <div className="absolute left-0 top-1/2 w-4 h-px bg-gray-300"></div>
+            <div className="absolute left-0 w-4 h-px bg-gray-300 top-1/2"></div>
           )}
 
           {/* User card */}
-          <div className="bg-white border rounded-lg shadow-sm p-3 w-48 z-10 relative">
-            <div className="font-medium text-sm">{node.name}</div>
-            <div className="text-xs text-gray-500 truncate mb-1">
+          <div className="relative z-10 w-48 p-3 bg-white border rounded-lg shadow-sm">
+            <div className="text-sm font-medium">{node.name}</div>
+            <div className="mb-1 text-xs text-gray-500 truncate">
               {node.email}
             </div>
-            <div className="flex justify-between items-center mt-1">
-              <span className="text-xs font-semibold bg-blue-100 text-blue-800 px-2 py-1 rounded">
+            <div className="flex items-center justify-between mt-1">
+              <span className="px-2 py-1 text-xs font-semibold text-blue-800 bg-blue-100 rounded">
                 ₹{node.amountRaised}
               </span>
-              <span className="text-xs font-semibold bg-green-100 text-green-800 px-2 py-1 rounded">
+              <span className="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded">
                 {node.referralsCount || 0} refs
               </span>
             </div>
@@ -237,30 +247,30 @@ const AdminDashboard = () => {
 
       {/* Message Modal */}
       {selectedMessage && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full">
-            <h3 className="text-lg font-medium mb-2">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
+          <div className="w-full max-w-2xl p-6 bg-white rounded-lg">
+            <h3 className="mb-2 text-lg font-medium">
               Message from {selectedMessage.name}
               {selectedMessage.userId && (
-                <span className="ml-2 bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+                <span className="px-2 py-1 ml-2 text-xs text-blue-800 bg-blue-100 rounded">
                   Registered User
                 </span>
               )}
             </h3>
-            <p className="text-gray-600 mb-2">
+            <p className="mb-2 text-gray-600">
               <strong>Email:</strong> {selectedMessage.email}
             </p>
-            <p className="text-gray-600 mb-2">
+            <p className="mb-2 text-gray-600">
               <strong>Date:</strong>{" "}
               {new Date(selectedMessage.date).toLocaleString()}
             </p>
-            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+            <div className="p-4 mt-4 rounded-lg bg-gray-50">
               <p className="whitespace-pre-wrap">{selectedMessage.message}</p>
             </div>
             <div className="flex justify-end mt-4 space-x-2">
               <button
                 onClick={() => setSelectedMessage(null)}
-                className="bg-gray-300 text-gray-700 px-4 py-2 rounded"
+                className="px-4 py-2 text-gray-700 bg-gray-300 rounded"
               >
                 Close
               </button>
@@ -269,7 +279,7 @@ const AdminDashboard = () => {
                   deleteContact(selectedMessage._id);
                   setSelectedMessage(null);
                 }}
-                className="bg-red-600 text-white px-4 py-2 rounded"
+                className="px-4 py-2 text-white bg-red-600 rounded"
               >
                 Delete Message
               </button>
@@ -280,7 +290,7 @@ const AdminDashboard = () => {
 
       {/* Admin Header */}
       <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex justify-between items-center">
+        <div className="flex items-center justify-between px-4 py-6 mx-auto max-w-7xl sm:px-6 lg:px-8">
           <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
           <button
             onClick={() => {
@@ -295,9 +305,9 @@ const AdminDashboard = () => {
       </header>
 
       {/* Navigation Tabs */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
         <div className="border-b border-gray-200">
-          <nav className="-mb-px flex space-x-8">
+          <nav className="flex -mb-px space-x-8">
             <button
               onClick={() => setActiveTab("referralTree")}
               className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
@@ -318,7 +328,7 @@ const AdminDashboard = () => {
             >
               Leaderboard
             </button>
-          
+
             <button
               onClick={() => setActiveTab("contacts")}
               className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
@@ -343,17 +353,16 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <main className="px-4 py-6 mx-auto max-w-7xl sm:px-6 lg:px-8">
         {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
+          <div className="flex items-center justify-center h-64">
+            <div className="w-12 h-12 border-t-2 border-b-2 border-red-500 rounded-full animate-spin"></div>
           </div>
         ) : (
           <>
-            {/* Referral Tree Tab */}
             {activeTab === "referralTree" && (
-              <div className="bg-white shadow rounded-lg overflow-hidden">
-                <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
+              <div className="overflow-hidden bg-white rounded-lg shadow">
+                <div className="px-4 py-5 border-b border-gray-200 sm:px-6">
                   <h3 className="text-lg font-medium text-gray-900">
                     Referral Network
                   </h3>
@@ -367,27 +376,79 @@ const AdminDashboard = () => {
                     className="bg-gray-50 rounded-lg p-4 overflow-auto min-h-[300px]"
                     ref={treeContainerRef}
                   >
-                    <div className="flex flex-wrap">
-                      {referralTree.length > 0 ? (
-                        referralTree.map((root) => renderTree(root))
-                      ) : (
-                        <div className="text-center py-8 w-full">
-                          <p className="text-gray-500">
-                            No referral data available
-                          </p>
+                    {referralTree.length > 0 ? (
+                      <div className="flex flex-wrap">
+                        {referralTree.map((root) => renderTree(root))}
+                      </div>
+                    ) : users.length > 0 ? (
+                      <div className="w-full py-8 text-center">
+                        <div className="mb-4">
+                          <svg
+                            className="w-12 h-12 mx-auto text-gray-400"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                            />
+                          </svg>
                         </div>
-                      )}
-                    </div>
+                        <h3 className="mb-1 text-lg font-medium text-gray-900">
+                          Connected Users
+                        </h3>
+                        <p className="mb-3 text-gray-500">
+                          {users.length} users found but no referral
+                          relationships detected
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          This could be because:
+                        </p>
+                        <ul className="max-w-md mx-auto mt-1 text-sm text-left text-gray-500 list-disc list-inside">
+                          <li>No users have been referred yet</li>
+                          <li>Users haven't entered referral codes</li>
+                          <li>
+                            The referral relationships haven't been established
+                          </li>
+                        </ul>
+                      </div>
+                    ) : (
+                      <div className="w-full py-8 text-center">
+                        <div className="mb-4">
+                          <svg
+                            className="w-12 h-12 mx-auto text-gray-400"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
+                        </div>
+                        <h3 className="mb-1 text-lg font-medium text-gray-900">
+                          No Users Found
+                        </h3>
+                        <p className="text-gray-500">
+                          There are no users in the system yet
+                        </p>
+                      </div>
+                    )}
                   </div>
-
                   <div className="mt-4 text-sm text-gray-600">
                     <div className="flex items-center mb-2">
-                      <div className="w-4 h-4 bg-blue-100 border border-blue-300 rounded mr-2"></div>
+                      <div className="w-4 h-4 mr-2 bg-blue-100 border border-blue-300 rounded"></div>
                       <span>User node with amount raised and referrals</span>
                     </div>
                     <div className="flex items-center">
-                      <div className="w-4 h-px bg-gray-300 mr-2 relative">
-                        <div className="absolute -left-1 top-0 w-2 h-px bg-gray-300 transform rotate-90"></div>
+                      <div className="relative w-4 h-px mr-2 bg-gray-300">
+                        <div className="absolute top-0 w-2 h-px transform rotate-90 bg-gray-300 -left-1"></div>
                       </div>
                       <span>Connection line showing referral relationship</span>
                     </div>
@@ -398,8 +459,8 @@ const AdminDashboard = () => {
 
             {/* Leaderboard Tab */}
             {activeTab === "leaderboard" && (
-              <div className="bg-white shadow rounded-lg overflow-hidden">
-                <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
+              <div className="overflow-hidden bg-white rounded-lg shadow">
+                <div className="px-4 py-5 border-b border-gray-200 sm:px-6">
                   <h3 className="text-lg font-medium text-gray-900">
                     Fundraiser Leaderboard
                   </h3>
@@ -412,19 +473,19 @@ const AdminDashboard = () => {
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
                           Rank
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
                           Name
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
                           Amount Raised
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
                           Referrals
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
                           Actions
                         </th>
                       </tr>
@@ -471,15 +532,15 @@ const AdminDashboard = () => {
                               onBlur={(e) =>
                                 updateAmount(user._id, e.target.value)
                               }
-                              className="border rounded px-2 py-1 w-24 text-sm font-bold"
+                              className="w-24 px-2 py-1 text-sm font-bold border rounded"
                             />
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full">
+                          <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                            <span className="px-2 py-1 text-green-800 bg-green-100 rounded-full">
                               {user.referralsCount || 0} referrals
                             </span>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <td className="px-6 py-4 text-sm font-medium whitespace-nowrap">
                             <button
                               onClick={() => deleteUser(user._id)}
                               className="text-red-600 hover:text-red-900"
@@ -497,8 +558,8 @@ const AdminDashboard = () => {
 
             {/* Contacts Tab */}
             {activeTab === "contacts" && (
-              <div className="bg-white shadow rounded-lg overflow-hidden">
-                <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
+              <div className="overflow-hidden bg-white rounded-lg shadow">
+                <div className="px-4 py-5 border-b border-gray-200 sm:px-6">
                   <h3 className="text-lg font-medium text-gray-900">
                     Contact Messages
                   </h3>
@@ -511,19 +572,19 @@ const AdminDashboard = () => {
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
                           Name
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
                           Email
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
                           Message
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
                           Date
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
                           Actions
                         </th>
                       </tr>
@@ -535,30 +596,30 @@ const AdminDashboard = () => {
                             <div className="text-sm font-medium text-gray-900">
                               {contact.name}
                               {contact.userId && (
-                                <span className="ml-2 bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+                                <span className="px-2 py-1 ml-2 text-xs text-blue-800 bg-blue-100 rounded">
                                   Registered User
                                 </span>
                               )}
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                             {contact.email}
                           </td>
-                          <td className="px-6 py-4 text-sm text-gray-500 max-w-xs">
-                            <div className="truncate max-w-xs">
+                          <td className="max-w-xs px-6 py-4 text-sm text-gray-500">
+                            <div className="max-w-xs truncate">
                               {contact.message}
                             </div>
                             <button
                               onClick={() => setSelectedMessage(contact)}
-                              className="mt-1 text-indigo-600 hover:text-indigo-900 text-xs"
+                              className="mt-1 text-xs text-indigo-600 hover:text-indigo-900"
                             >
                               View Full Message
                             </button>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                             {new Date(contact.date).toLocaleDateString()}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <td className="px-6 py-4 text-sm font-medium whitespace-nowrap">
                             <button
                               onClick={() => deleteContact(contact._id)}
                               className="text-red-600 hover:text-red-900"
@@ -576,8 +637,8 @@ const AdminDashboard = () => {
 
             {/* Settings Tab */}
             {activeTab === "settings" && (
-              <div className="bg-white shadow rounded-lg overflow-hidden">
-                <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
+              <div className="overflow-hidden bg-white rounded-lg shadow">
+                <div className="px-4 py-5 border-b border-gray-200 sm:px-6">
                   <h3 className="text-lg font-medium text-gray-900">
                     Admin Settings
                   </h3>
@@ -608,7 +669,7 @@ const AdminDashboard = () => {
                             })
                           }
                           required
-                          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
+                          className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
                         />
                       </div>
 
@@ -632,7 +693,7 @@ const AdminDashboard = () => {
                           }
                           required
                           minLength="8"
-                          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
+                          className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
                         />
                       </div>
 
@@ -656,12 +717,12 @@ const AdminDashboard = () => {
                           }
                           required
                           minLength="8"
-                          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
+                          className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
                         />
                       </div>
 
                       {passwordError && (
-                        <div className="text-red-600 text-sm">
+                        <div className="text-sm text-red-600">
                           {passwordError}
                         </div>
                       )}
@@ -669,7 +730,7 @@ const AdminDashboard = () => {
                       <div>
                         <button
                           type="submit"
-                          className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                          className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                         >
                           Change Password
                         </button>
@@ -685,5 +746,4 @@ const AdminDashboard = () => {
     </div>
   );
 };
-
 export default AdminDashboard;
