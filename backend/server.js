@@ -21,6 +21,8 @@ mongoose
 
 // Routes
 app.use("/api/interns", internRoutes);
+// Add this after existing routes
+app.use('/api/contact', require('./routes/internRoutes'));
 
 // Start server
 const PORT = process.env.PORT || 5000;
