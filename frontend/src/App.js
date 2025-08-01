@@ -13,6 +13,8 @@ import Contact from "./pages/Contact";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Dashboard from "./components/Dashboard";
+import AdminLogin from "./pages/AdminLogin";
+import AdminDashboard from "./pages/AdminDashboard";
 import "./index.css";
 import Leaderboard from "./pages/Leaderboard";
 // ProtectedRoute component for authenticated routes
@@ -35,6 +37,8 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/leaderboard" element={<Leaderboard />} />
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
               <Route
                 path="/dashboard"
                 element={
