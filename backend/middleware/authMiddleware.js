@@ -26,7 +26,7 @@ const authMiddleware = async (req, res, next) => {
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
-
+    req.user = admin;
     next();
   } catch (err) {
     console.error("Auth middleware error:", err);

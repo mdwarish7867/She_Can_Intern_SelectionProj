@@ -34,7 +34,6 @@ router.post("/login", async (req, res) => {
   }
 });
 
-
 // Delete user
 router.delete("/users/:id", authMiddleware, async (req, res) => {
   try {
@@ -98,6 +97,62 @@ router.delete("/contacts/:id", authMiddleware, async (req, res) => {
     res.json({ success: true, message: "Message deleted successfully" });
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+});
+
+// Get leaderboard
+// Get leaderboard
+router.get("/leaderboard", authMiddleware, async (req, res) => {
+  try {
+    const leaderboard = await Intern.find()
+      .sort({ amountRaised: -1 })
+      .limit(20)
+      .select("name email amountRaised referralsCount");
+    res.json(leaderboard);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Get all users for referral tree
+router.get("/users", authMiddleware, async (req, res) => {
+  try {
+    // Fetch all users with their referrer information
+    const users = await Intern.find()
+      .populate("referrer", "name") // Populate referrer name
+      .select("name email amountRaised referralsCount referrer");
+      
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Change admin password
+router.post("/change-password", authMiddleware, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    // Change from req.admin.id to req.user.id
+    const admin = await Admin.findById(req.user.id);
+
+    if (!admin) {
+      return res.status(404).json({ message: "Admin not found" });
+    }
+
+    // Compare current password
+    const isMatch = await admin.comparePassword(currentPassword);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid current password" });
+    }
+
+    // Update password
+    admin.password = newPassword;
+    await admin.save();
+
+    res.json({ success: true, message: "Password updated successfully" });
+  } catch (err) {
+    console.error("Password change error:", err);
+    res.status(500).json({ message: "Server error" });
   }
 });
 
