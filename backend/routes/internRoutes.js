@@ -86,21 +86,6 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// Get intern data
-router.get("/:id", async (req, res) => {
-  try {
-    const intern = await Intern.findById(req.params.id).select("-password");
-
-    if (!intern) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    res.json(intern);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
 // Get leaderboard
 router.get("/leaderboard/top", async (req, res) => {
   try {
@@ -158,6 +143,21 @@ router.put("/:id/password", async (req, res) => {
     await intern.save();
 
     res.json({ message: "Password updated successfully" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Get intern data
+router.get('/:id([a-fA-F0-9]{24})', async (req, res) => {
+  try {
+    const intern = await Intern.findById(req.params.id).select("-password");
+
+    if (!intern) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json(intern);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
