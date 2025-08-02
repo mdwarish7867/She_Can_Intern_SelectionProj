@@ -1,7 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
-const path = require("path");
+const path = require("path"); // Make sure to require path
 const cors = require("cors");
 
 // Routes
@@ -12,11 +12,13 @@ const adminRoutes = require("./routes/adminRoutes");
 const app = express();
 
 // Middleware
-// Enable CORS with environment variable
-app.use(cors({
-  origin: process.env.FRONTEND_URL,
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+  })
+);
 app.use(express.json());
 
 // Connect to MongoDB
@@ -26,17 +28,22 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.error(err));
+  .catch((err) => {
+    console.error("MongoDB connection error:", err);
+    process.exit(1); // Exit on connection failure
+  });
 
 // API Routes
 app.use("/api/interns", internRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/admin", adminRoutes);
 
-// Serve frontend (React build)
+// Serve frontend in production
 if (process.env.NODE_ENV === "production") {
+  // Set static folder
   app.use(express.static(path.join(__dirname, "../frontend/build")));
 
+  // Handle React routing
   app.get("*", (req, res) => {
     res.sendFile(path.resolve(__dirname, "../frontend/build", "index.html"));
   });

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import axios from "axios";
+import api from "../utils/api"; // Use the API utility
 
 const Login = () => {
   const navigate = useNavigate();
@@ -31,15 +31,16 @@ const Login = () => {
         throw new Error("Email and password are required");
       }
 
-      // Send login request
-      const response = await axios.post(
-         `${process.env.REACT_APP_BACKEND_URL}/api/interns/login`,
-         credentials
-      );
+      // Send login request using API utility
+      const response = await api.post("/api/interns/login", credentials);
 
       // Update auth context
       login(response.data);
-      navigate("/dashboard");
+      
+      // Add slight delay to ensure state updates before redirect
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 100);
     } catch (error) {
       let errorMessage = "Login failed. Please try again.";
 

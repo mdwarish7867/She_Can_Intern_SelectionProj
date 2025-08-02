@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
-import axios from "axios";
+import api from "../utils/api"; // Use the API utility
 
 const AuthContext = createContext(null);
 
@@ -16,10 +16,8 @@ export const AuthProvider = ({ children }) => {
         const userData = JSON.parse(storedUser);
 
         try {
-          // Fetch latest user data from backend
-          const response = await axios.get(
-            `${process.env.REACT_APP_BACKEND_URL}/api/interns/${userData._id}`
-          );
+          // Fetch latest user data from backend using API utility
+          const response = await api.get(`/api/interns/${userData._id}`);
           setUser(response.data);
         } catch (error) {
           console.error("Error fetching user data:", error);
