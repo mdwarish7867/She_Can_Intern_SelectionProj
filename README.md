@@ -1,86 +1,129 @@
-# 🚀 [Live Demo](https://she-can-intern-proj.onrender.com/) — Full Stack Internship Project
+Here’s your **final README.md** updated with the **images/screenshots** you've provided. You can upload these images in a folder named `/screenshots/` or `/assets/` inside your repository and link them in markdown.
 
-## 📋 Project Title: **Internship Contact Dashboard**
+---
 
-A **Full Stack Web Application** built for the Full Stack Development Internship Assignment using **MERN Stack + Tailwind CSS**. The application collects contact form submissions and allows the admin to **view, edit, delete, and manage** user data through a secured dashboard.
+```md
+# 🚀 [Live Demo](https://she-can-intern-proj.onrender.com/) — She Can Intern Selection Portal (Full Stack Project)
+
+## 📋 Project Title: **Fundraising Intern Selection Portal**
+
+A **Full Stack Web Application** built as part of the **Full Stack Development Internship Assignment** using the **MERN Stack (MongoDB, Express.js, React.js, Node.js)** and **Tailwind CSS**.
+
+This portal enables interns to register with referral codes, track their referral-based earnings, and allows admins to manage users, funding, and contact messages through a secured dashboard.
 
 ---
 
 ## ✨ Features
 
-- 🌐 **Responsive Website with Animated UI**
-- 📝 **Contact Form** to collect user data.
-- 📊 **Admin Dashboard** to manage submissions.
-- 🔐 **Login & Signup Authentication**.
-- 📦 **MERN Stack Architecture**.
-- 💾 **MongoDB Atlas Database Integration**.
-- ✨ **AOS (Animate on Scroll) Animations**.
-- 🔄 **Live CRUD Operations** (Create, Read, Update, Delete).
-- 🌙 **Dark Mode Toggle** (Optional but recommended).
-- 🚀 **Deployed on Render & Vercel**.
+- 🌐 **Fully Responsive & Animated UI (Tailwind CSS + AOS Animations)**
+- 📝 **Referral-based Registration & Authentication System**
+- 🏠 **User Dashboard** displaying Referral Code, Earnings, Leaderboard Rank, and Rewards.
+- 📨 **Contact Us Page** with auto-filled credentials for logged-in users.
+- 📊 **Leaderboard** showcasing top fundraisers & user's current position.
+- 🔑 **Change Password**, **Forgot Password & Reset Password** flows.
+- 🖥️ **Admin Dashboard** with full CRUD controls over users, funding, and messages.
+- 🔄 **Live CRUD Operations** connected to MongoDB Atlas.
+- 🛡️ **Environment-based Admin Credential Seeding** via Script.
+- 🚀 **Deployed on Render (Backend & Frontend).**
 
 ---
 
-## 🏗️ Tech Stack
+## 🏗️ Tech Stack Overview
 
-| Frontend                     | Backend             | Database      | Deployment               |
-| ---------------------------- | ------------------- | ------------- | ------------------------ |
-| React.js                     | Node.js, Express.js | MongoDB Atlas | Render (Backend)         |
-| Tailwind CSS, AOS Animations | Mongoose ORM        |               | Render Static (Frontend) |
+| Frontend                          | Backend               | Database      | Deployment                |
+| --------------------------------- | --------------------- | ------------- | ------------------------- |
+| React.js, Tailwind CSS, AOS.js    | Node.js, Express.js   | MongoDB Atlas | Render (Full Stack Deploy) |
+| React Toastify (Notifications)    | Mongoose ORM          |               |                           |
 
 ---
 
 ## 📂 Folder Structure
 
 ```
-/backend
- ├── /models/intern.js         // Mongoose Schema
- ├── /routes/internRoute.js    // Express Routes
- ├── server.js                 // Main server file
-/frontend
- ├── /public                   // Static Assets
- ├── /src
- │    ├── /components          // React Components
- │    │     ├── Dashboard.js
- │    │     ├── Login.js
- │    │     ├── Signup.js
- │    ├── App.js
- │    ├── index.js
- │    ├── index.css
- ├── tailwind.config.js
-README.md
+
+/She\_Can\_Intern\_SelectionProj
+├── /backend
+│   ├── /models/               // Mongoose Schemas (Intern, Admin, Contact)
+│   ├── /routes/               // Express API Routes
+│   ├── /controllers/          // Route Handlers/Controllers
+│   ├── /utils/                // Helper Functions
+│   ├── server.js              // Main server entry point
+│   └── seedAdmin.js           // Admin Seeder Script
+├── /frontend
+│   ├── /src/components/       // React Components (Dashboard, Leaderboard, etc.)
+│   ├── /src/pages/            // Page Components (Home, About, Contact, Admin)
+│   ├── App.js, index.js       // React Entry Points
+│   ├── tailwind.config.js     // Tailwind Configuration
+├── /screenshots                // Screenshots for README
+├── README.md
+└── package.json               // Project Dependencies
+
+````
+
+---
+
+## 🖼️ Screenshots & Previews
+
+| **Dashboard View**                   | **Leaderboard View**                    |
+| ------------------------------------ | -------------------------------------- |
+| ![Dashboard](./screenshots/dashboard.png) | ![Leaderboard User](./screenshots/leaderboardUser.png) |
+
+| **Home Page**                         | **Register Page**                       |
+| ------------------------------------- | -------------------------------------- |
+| ![Home](./screenshots/home.png)       | ![Register](./screenshots/register.png) |
+
+| **Login Page**                        | **Contact Messages (Admin View)**      |
+| ------------------------------------- | -------------------------------------- |
+| ![Login](./screenshots/login.png)     | ![Admin Messages](./screenshots/adminMessege.png) |
+
+| **Admin Leaderboard View**            | **Admin Password Update View**         |
+| ------------------------------------- | -------------------------------------- |
+| ![Admin Leaderboard](./screenshots/adminleaderboard.png) | ![Admin Password](./screenshots/adminPassword.png) |
+
+| **Admin Login Page**                  |
+| ------------------------------------- |
+| ![Admin Login](./screenshots/adminlogin.png) |
+
+---
+
+## 🔑 Environment Variables Setup
+
+### Backend (`/backend/.env`)
+```env
+MONGO_URI=your_mongodb_connection_string
+PORT=5000
+ADMIN_USERNAME=your_admin_username
+ADMIN_PASSWORD=your_admin_password
+FRONTEND_URL=http://localhost:3000
+````
+
+### Frontend (`/frontend/.env`)
+
+```env
+REACT_APP_BACKEND_URL=http://localhost:5000
 ```
 
 ---
 
-## 🖥️ Screenshots & Demo
+## 🛡️ Admin Credentials Setup Guide
 
-| **Landing Page**      | **Dashboard View**    |
-| --------------------- | --------------------- |
-| _(Insert Screenshot)_ | _(Insert Screenshot)_ |
+1. Define **`ADMIN_USERNAME`** and **`ADMIN_PASSWORD`** in `/backend/.env`.
+2. Run the **Admin Seeder Script**:
 
-| **Login Page**        | **Contact Form**      |
-| --------------------- | --------------------- |
-| _(Insert Screenshot)_ | _(Insert Screenshot)_ |
+   ```bash
+   cd backend
+   node seedAdmin.js
+   ```
 
-> 💡 **Tip**: Add screen recordings/GIFs in your README for extra impact!
+   * Creates admin if not exists.
+   * Updates password if admin exists but password differs.
+3. Access **Admin Panel** at:
 
----
+   ```
+   /admin/login
+   ```
 
-## 🔑 Key Functionalities
-
-- **User Authentication** (Login, Signup).
-- **Contact Form Submission** with validation.
-- **Admin Dashboard**:
-
-  - View all submissions.
-  - Edit details.
-  - Delete records.
-
-- **Connected to MongoDB Atlas** for cloud data persistence.
-- **Toast Notifications** for actions (submission, deletion, etc.).
-- **Animated smooth UI** using AOS.
-- Fully **responsive and mobile-friendly** layout.
+   (Credentials are secured via `.env`)
 
 ---
 
@@ -91,49 +134,67 @@ README.md
 git clone https://github.com/mdwarish7867/She_Can_Intern_SelectionProj.git
 cd She_Can_Intern_SelectionProj
 
-# Install backend dependencies
+# Backend Setup
 cd backend
 npm install
-
-# Install frontend dependencies
-cd ../frontend
-npm install
-
-# Create a .env file in backend and configure MongoDB URI & Port
-MONGO_URI = your-mongo-db-uri
-PORT = 5000
-
-# Run Backend
-cd backend
+# Add .env file and run:
+node seedAdmin.js
 npm start
 
-# Run Frontend
+# Frontend Setup
 cd ../frontend
-npm run dev
+npm install
+# Add .env file
+npm start
 ```
 
 ---
 
-## 🚀 Live Links
+## 🚀 Deployment Links
 
-- 🔗 **Frontend Live**: [https://she-can-intern-proj.onrender.com/](https://she-can-intern-proj.onrender.com/)
-- 🔗 **Backend Live**: [https://she-can-intern-selectionproj-backend.onrender.com](https://she-can-intern-selectionproj-backend.onrender.com)
-- 📂 **GitHub Repo**: [hhttps://github.com/mdwarish7867/She_Can_Intern_SelectionProj.git](https://github.com/mdwarish7867/She_Can_Intern_SelectionProj.gitd)
+| Service            | Live URL                                                                                                                                |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Frontend & Backend | [https://she-can-intern-proj.onrender.com/](https://she-can-intern-proj.onrender.com/)                                                  |
+| GitHub Repository  | [https://github.com/mdwarish7867/She\_Can\_Intern\_SelectionProj.git](https://github.com/mdwarish7867/She_Can_Intern_SelectionProj.git) |
 
 ---
 
-## 🤝 Contributions
+## 🎯 Key Functional Modules
 
-This project was developed as part of a **Full Stack Development Internship Assignment**. Open to improvements and feedback!
+### ✅ User Module:
+
+* Registration with referral code.
+* Dashboard displaying referral code, earnings, leaderboard rank.
+* Change Password & Forgot/Reset Password.
+* Contact Us Form with dynamic fields.
+
+### ✅ Admin Module:
+
+* Admin Login (Environment-based Credentials).
+* User Management (View, Delete, Update Funding).
+* Contact Message Management.
+* Password Change functionality.
+
+### ✅ Referral & Funding Logic:
+
+* Every new referral increments the referrer's total funding by ₹500.
+* Leaderboard dynamically ranks based on total raised funds.
+
+---
+
+## 📝 To-Do (Enhancements Roadmap)
+
+* SMTP Email Integration for Forgot/Reset Password.
+* Pagination & Filtering in Admin Panels.
+* Enhanced UI for mobile devices.
+* Advanced analytics on dashboard.
 
 ---
 
 ## 📧 Contact
 
-For any queries, reach out to:
-
-- Name: **MD Warish Ansari**
-- LinkedIn: [MD WARISH ANSARI](https://www.linkedin.com/in/md-warish-ansari-46b1ab258/)
-- Email: [EMAIL Warish](warishansari018@gmail.com)
+| Name                 | LinkedIn                                                                    | Email                                                         |
+| -------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| **MD Warish Ansari** | [LinkedIn Profile](https://www.linkedin.com/in/md-warish-ansari-46b1ab258/) | [warishansari018@gmail.com](mailto:warishansari018@gmail.com) |
 
 ---
