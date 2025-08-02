@@ -33,7 +33,7 @@ const AdminLogin = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/admin/login",
+        `${process.env.REACT_APP_BACKEND_URL}/api/admin/login`,
         credentials
       );
 
@@ -64,13 +64,13 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="flex items-center justify-center min-h-screen px-4 py-12 bg-gray-50 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md space-y-8">
         <div>
-          <div className="mx-auto h-16 w-16 bg-red-600 rounded-full flex items-center justify-center">
+          <div className="flex items-center justify-center w-16 h-16 mx-auto bg-red-600 rounded-full">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-8 w-8 text-white"
+              className="w-8 h-8 text-white"
               viewBox="0 0 20 20"
               fill="currentColor"
             >
@@ -81,22 +81,22 @@ const AdminLogin = () => {
               />
             </svg>
           </div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-6 text-3xl font-extrabold text-center text-gray-900">
             Admin Portal Login
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="mt-2 text-sm text-center text-gray-600">
             Restricted access to authorized personnel only
           </p>
         </div>
 
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          <div className="px-4 py-3 text-red-700 bg-red-100 border border-red-400 rounded">
             {error}
           </div>
         )}
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm -space-y-px">
+          <div className="-space-y-px rounded-md shadow-sm">
             <div>
               <label htmlFor="username" className="sr-only">
                 Username
@@ -108,7 +108,7 @@ const AdminLogin = () => {
                 required
                 value={credentials.username}
                 onChange={handleChange}
-                className="appearance-none rounded-t-md relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-red-500 focus:border-red-500 focus:z-10 sm:text-sm"
+                className="relative block w-full px-3 py-3 text-gray-900 placeholder-gray-500 border border-gray-300 appearance-none rounded-t-md focus:outline-none focus:ring-red-500 focus:border-red-500 focus:z-10 sm:text-sm"
                 placeholder="Admin Username"
               />
             </div>
@@ -123,17 +123,17 @@ const AdminLogin = () => {
                 required
                 value={credentials.password}
                 onChange={handleChange}
-                className="appearance-none rounded-b-md relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-red-500 focus:border-red-500 focus:z-10 sm:text-sm pr-10"
+                className="relative block w-full px-3 py-3 pr-10 text-gray-900 placeholder-gray-500 border border-gray-300 appearance-none rounded-b-md focus:outline-none focus:ring-red-500 focus:border-red-500 focus:z-10 sm:text-sm"
                 placeholder="Password"
               />
               <button
                 type="button"
-                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                className="absolute inset-y-0 right-0 flex items-center pr-3"
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? (
                   <svg
-                    className="h-5 w-5 text-gray-500"
+                    className="w-5 h-5 text-gray-500"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -153,7 +153,7 @@ const AdminLogin = () => {
                   </svg>
                 ) : (
                   <svg
-                    className="h-5 w-5 text-gray-500"
+                    className="w-5 h-5 text-gray-500"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -175,11 +175,11 @@ const AdminLogin = () => {
               id="remember"
               name="remember"
               type="checkbox"
-              className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
+              className="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
             />
             <label
               htmlFor="remember"
-              className="ml-2 block text-sm text-gray-900"
+              className="block ml-2 text-sm text-gray-900"
             >
               Remember me
             </label>
@@ -189,12 +189,12 @@ const AdminLogin = () => {
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-75"
+              className="relative flex justify-center w-full px-4 py-3 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md group hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-75"
             >
               {loading ? (
                 <span className="flex items-center">
                   <svg
-                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                    className="w-5 h-5 mr-3 -ml-1 text-white animate-spin"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
@@ -222,7 +222,7 @@ const AdminLogin = () => {
           </div>
         </form>
 
-        <div className="text-center mt-4">
+        <div className="mt-4 text-center">
           <p className="text-sm text-gray-600">
             Forgot your password? Contact system administrator
           </p>

@@ -135,4 +135,32 @@ router.post("/contact", async (req, res) => {
   }
 });
 
+// Add this route
+router.put("/:id/password", async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const intern = await Intern.findById(req.params.id);
+
+    if (!intern) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Verify current password
+    const isMatch = await bcrypt.compare(currentPassword, intern.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Current password is incorrect" });
+    }
+
+    // Hash new password
+    const salt = await bcrypt.genSalt(10);
+    intern.password = await bcrypt.hash(newPassword, salt);
+
+    await intern.save();
+
+    res.json({ message: "Password updated successfully" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 module.exports = router;

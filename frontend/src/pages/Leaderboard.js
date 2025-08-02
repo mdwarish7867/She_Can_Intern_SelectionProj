@@ -11,7 +11,7 @@ const Leaderboard = () => {
     const fetchLeaderboard = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/interns/leaderboard/top"
+          `${process.env.REACT_APP_BACKEND_URL}/api/interns/leaderboard/top`
         );
         setLeaderboard(response.data);
         setLoading(false);
@@ -26,17 +26,17 @@ const Leaderboard = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+      <div className="flex items-center justify-center h-64">
+        <div className="w-12 h-12 border-t-2 border-b-2 border-indigo-500 rounded-full animate-spin"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-extrabold text-gray-900 mb-4">
+    <div className="min-h-screen py-12 bg-gray-50">
+      <div className="max-w-4xl px-4 mx-auto sm:px-6 lg:px-8">
+        <div className="mb-12 text-center">
+          <h1 className="mb-4 text-4xl font-extrabold text-gray-900">
             Top Fundraisers
           </h1>
           <p className="text-xl text-gray-600">
@@ -44,8 +44,8 @@ const Leaderboard = () => {
           </p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-          <div className="grid grid-cols-12 bg-indigo-600 text-white font-semibold py-4 px-6">
+        <div className="overflow-hidden bg-white shadow-xl rounded-2xl">
+          <div className="grid grid-cols-12 px-6 py-4 font-semibold text-white bg-indigo-600">
             <div className="col-span-1 md:col-span-1">Rank</div>
             <div className="col-span-5 md:col-span-4">Name</div>
             <div className="col-span-3 md:col-span-3">Raised</div>
@@ -67,7 +67,7 @@ const Leaderboard = () => {
                   : ""
               }`}
             >
-              <div className="col-span-1 md:col-span-1 font-bold">
+              <div className="col-span-1 font-bold md:col-span-1">
                 {index === 0
                   ? "🥇"
                   : index === 1
@@ -76,19 +76,19 @@ const Leaderboard = () => {
                   ? "🥉"
                   : index + 1}
               </div>
-              <div className="col-span-5 md:col-span-4 font-medium">
+              <div className="col-span-5 font-medium md:col-span-4">
                 {intern.name}
                 {user?._id === intern._id && (
-                  <span className="ml-2 bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+                  <span className="px-2 py-1 ml-2 text-xs text-blue-800 bg-blue-100 rounded">
                     You
                   </span>
                 )}
               </div>
-              <div className="col-span-3 md:col-span-3 text-green-600 font-bold">
+              <div className="col-span-3 font-bold text-green-600 md:col-span-3">
                 ₹{intern.amountRaised}
               </div>
               <div className="col-span-3 md:col-span-4">
-                <span className="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full text-sm">
+                <span className="px-2 py-1 text-sm text-indigo-800 bg-indigo-100 rounded-full">
                   {intern.referralsCount} referrals
                 </span>
               </div>
@@ -97,8 +97,8 @@ const Leaderboard = () => {
         </div>
 
         {user && (
-          <div className="mt-8 bg-white rounded-xl shadow-md p-6">
-            <div className="flex flex-col md:flex-row md:items-center justify-between">
+          <div className="p-6 mt-8 bg-white shadow-md rounded-xl">
+            <div className="flex flex-col justify-between md:flex-row md:items-center">
               <div>
                 <h3 className="text-lg font-medium text-gray-900">
                   Your Position

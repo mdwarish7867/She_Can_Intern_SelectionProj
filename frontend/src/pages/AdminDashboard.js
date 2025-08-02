@@ -24,7 +24,7 @@ const AdminDashboard = () => {
 
   // Axios instance with auth header
   const adminApi = axios.create({
-    baseURL: "http://localhost:5000/api/admin",
+  baseURL: `${process.env.REACT_APP_BACKEND_URL}/api/admin`,
     headers: {
       Authorization: `Basic ${adminAuth}`,
     },

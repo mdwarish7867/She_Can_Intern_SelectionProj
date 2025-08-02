@@ -9,7 +9,11 @@ const adminRoutes = require("./routes/adminRoutes");
 const app = express();
 
 // Middleware
-app.use(cors());
+// Enable CORS with environment variable
+app.use(cors({
+  origin: process.env.FRONTEND_URL,
+  credentials: true
+}));
 app.use(express.json());
 
 // Connect to MongoDB

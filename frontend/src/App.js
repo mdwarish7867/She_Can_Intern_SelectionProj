@@ -19,6 +19,7 @@ import "./index.css";
 import Leaderboard from "./pages/Leaderboard";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import UpdatePassword from "./pages/UpdatePassword";
 // ProtectedRoute component for authenticated routes
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuth();
@@ -42,6 +43,7 @@ function App() {
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/update-password" element={<UpdatePassword />} />
               <Route
                 path="/reset-password/:token"
                 element={<ResetPassword />}

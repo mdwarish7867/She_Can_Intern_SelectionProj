@@ -17,7 +17,7 @@ const Dashboard = () => {
 
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/interns/${user._id}`
+          `${process.env.REACT_APP_BACKEND_URL}/api/interns/${user._id}`
         );
         setInternData(response.data);
         setLoading(false);
@@ -39,15 +39,15 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+      <div className="flex items-center justify-center h-64">
+        <div className="w-12 h-12 border-t-2 border-b-2 border-indigo-500 rounded-full animate-spin"></div>
       </div>
     );
   }
 
   if (!internData) {
     return (
-      <div className="text-center py-12">
+      <div className="py-12 text-center">
         <p className="text-gray-600">No data found for your account</p>
       </div>
     );
@@ -60,16 +60,16 @@ const Dashboard = () => {
   );
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-6xl px-4 py-8 mx-auto sm:px-6 lg:px-8">
       <ToastContainer position="top-right" />
 
       {/* Animated Welcome Header */}
-      <div className="bg-white rounded-2xl shadow-xl p-6 mb-8 animate-fadeIn">
+      <div className="p-6 mb-8 bg-white shadow-xl rounded-2xl animate-fadeIn">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
               Welcome, <span className="text-indigo-600">{user.name}</span>!
-              <span className="ml-3 inline-block animate-bounce">🎉</span>
+              <span className="inline-block ml-3 animate-bounce">🎉</span>
             </h1>
             {internData.referredBy && (
               <p className="mt-2 text-gray-600">
@@ -78,7 +78,7 @@ const Dashboard = () => {
               </p>
             )}
           </div>
-          <div className="mt-4 md:mt-0 flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 mt-4 md:mt-0">
             <button
               onClick={copyToClipboard}
               className="bg-indigo-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-indigo-700 transition-colors hover:scale-[1.03]"
@@ -92,36 +92,42 @@ const Dashboard = () => {
             >
               View Leaderboard
             </Link>
+            <Link
+              to="/update-password"
+              className="bg-red-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-red-700 transition-colors hover:scale-[1.03]"
+            >
+              Change Password
+            </Link>
           </div>
         </div>
 
-        <div className="mt-4 bg-gray-50 p-4 rounded-lg">
-          <p className="font-mono bg-white p-2 rounded text-center text-indigo-600 font-bold">
+        <div className="p-4 mt-4 rounded-lg bg-gray-50">
+          <p className="p-2 font-mono font-bold text-center text-indigo-600 bg-white rounded">
             {internData.referralCode}
           </p>
-          <p className="text-center text-sm text-gray-600 mt-2">
+          <p className="mt-2 text-sm text-center text-gray-600">
             Share this code with friends to earn ₹500 per successful referral
           </p>
         </div>
       </div>
 
       {/* Stats Section */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white rounded-2xl shadow-xl p-6 text-center">
+      <div className="grid grid-cols-1 gap-6 mb-8 md:grid-cols-3">
+        <div className="p-6 text-center bg-white shadow-xl rounded-2xl">
           <div className="text-3xl font-bold text-indigo-600">
             ₹{internData.amountRaised}
           </div>
           <p className="text-gray-600">Total Raised</p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl p-6 text-center">
+        <div className="p-6 text-center bg-white shadow-xl rounded-2xl">
           <div className="text-3xl font-bold text-green-600">
             {internData.referralsCount}
           </div>
           <p className="text-gray-600">Successful Referrals</p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl p-6 text-center">
+        <div className="p-6 text-center bg-white shadow-xl rounded-2xl">
           <div className="text-3xl font-bold text-blue-600">
             ₹{internData.goal - internData.amountRaised}
           </div>
@@ -130,8 +136,8 @@ const Dashboard = () => {
       </div>
 
       {/* Progress Section */}
-      <div className="bg-white rounded-2xl shadow-xl p-6 mb-8">
-        <div className="flex flex-wrap justify-between items-center gap-4 mb-4">
+      <div className="p-6 mb-8 bg-white shadow-xl rounded-2xl">
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
           <h2 className="text-xl font-semibold text-gray-900">
             Fundraising Progress
           </h2>
@@ -141,16 +147,16 @@ const Dashboard = () => {
         </div>
 
         <div className="mb-4">
-          <div className="flex justify-between text-sm font-medium text-gray-700 mb-1">
+          <div className="flex justify-between mb-1 text-sm font-medium text-gray-700">
             <span>₹0</span>
             <span>₹{internData.goal} Goal</span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-6">
+          <div className="w-full h-6 bg-gray-200 rounded-full">
             <div
-              className="bg-gradient-to-r from-green-400 to-teal-500 h-6 rounded-full flex items-center justify-end"
+              className="flex items-center justify-end h-6 rounded-full bg-gradient-to-r from-green-400 to-teal-500"
               style={{ width: `${progressPercentage}%` }}
             >
-              <span className="text-xs font-bold text-white mr-2">
+              <span className="mr-2 text-xs font-bold text-white">
                 ₹{internData.amountRaised}
               </span>
             </div>
@@ -158,20 +164,20 @@ const Dashboard = () => {
         </div>
 
         <div className="mt-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-center">
-            <div className="bg-gray-50 p-4 rounded-lg hover:shadow-md transition-shadow">
+          <div className="grid grid-cols-1 gap-2 text-center md:grid-cols-3">
+            <div className="p-4 transition-shadow rounded-lg bg-gray-50 hover:shadow-md">
               <p className="text-sm text-gray-600">Bronze Badge</p>
               <p className="text-xl font-bold">
                 {internData.amountRaised >= 1000 ? "✅" : "🔒"}
               </p>
             </div>
-            <div className="bg-gray-50 p-4 rounded-lg hover:shadow-md transition-shadow">
+            <div className="p-4 transition-shadow rounded-lg bg-gray-50 hover:shadow-md">
               <p className="text-sm text-gray-600">Silver Badge</p>
               <p className="text-xl font-bold">
                 {internData.amountRaised >= 3000 ? "✅" : "🔒"}
               </p>
             </div>
-            <div className="bg-gray-50 p-4 rounded-lg hover:shadow-md transition-shadow">
+            <div className="p-4 transition-shadow rounded-lg bg-gray-50 hover:shadow-md">
               <p className="text-sm text-gray-600">Gold Badge</p>
               <p className="text-xl font-bold">
                 {internData.amountRaised >= 5000 ? "✅" : "🔒"}
@@ -182,12 +188,12 @@ const Dashboard = () => {
       </div>
 
       {/* Rewards Section */}
-      <div className="bg-white rounded-2xl shadow-xl p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-6">
+      <div className="p-6 bg-white shadow-xl rounded-2xl">
+        <h2 className="mb-6 text-xl font-semibold text-gray-900">
           Your Rewards & Badges
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           {internData.rewards.map((reward, index) => (
             <div
               key={index}
@@ -198,13 +204,13 @@ const Dashboard = () => {
               }`}
             >
               <div className="text-center">
-                <div className="text-5xl mb-4">
+                <div className="mb-4 text-5xl">
                   {index === 0 ? "🥉" : index === 1 ? "🥈" : "🥇"}
                 </div>
                 <h3 className="text-lg font-medium text-gray-900">
                   {reward.title}
                 </h3>
-                <p className="text-sm text-gray-500 mt-2">
+                <p className="mt-2 text-sm text-gray-500">
                   {reward.description}
                 </p>
                 <div className="mt-4">
@@ -225,7 +231,7 @@ const Dashboard = () => {
           ))}
         </div>
 
-        <div className="mt-8 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl p-4 border border-indigo-100">
+        <div className="p-4 mt-8 border border-indigo-100 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl">
           <h3 className="text-lg font-medium text-indigo-800">
             How Referrals Work
           </h3>

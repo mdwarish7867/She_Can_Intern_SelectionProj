@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
         try {
           // Fetch latest user data from backend
           const response = await axios.get(
-            `http://localhost:5000/api/interns/${userData._id}`
+            `${process.env.REACT_APP_BACKEND_URL}/api/interns/${userData._id}`
           );
           setUser(response.data);
         } catch (error) {

@@ -39,7 +39,10 @@ const Contact = () => {
         userId: user?._id || null,
       };
 
-      await axios.post("http://localhost:5000/api/contact", contactData);
+      await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/api/contact`,
+        contactData
+      );
 
       setSubmitted(true);
       toast.success("Message sent successfully!");
