@@ -17,6 +17,8 @@ import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import "./index.css";
 import Leaderboard from "./pages/Leaderboard";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 // ProtectedRoute component for authenticated routes
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuth();
@@ -39,6 +41,11 @@ function App() {
               <Route path="/leaderboard" element={<Leaderboard />} />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route
+                path="/reset-password/:token"
+                element={<ResetPassword />}
+              />
               <Route
                 path="/dashboard"
                 element={
@@ -50,12 +57,12 @@ function App() {
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </main>
-          <footer className="bg-gray-800 text-white py-8">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="flex flex-col md:flex-row justify-between items-center">
+          <footer className="py-8 text-white bg-gray-800">
+            <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+              <div className="flex flex-col items-center justify-between md:flex-row">
                 <div className="mb-4 md:mb-0">
                   <div className="flex items-center">
-                    <div className="bg-gray-200 border-2 border-dashed rounded-xl w-12 h-12" />
+                    <div className="w-12 h-12 bg-gray-200 border-2 border-dashed rounded-xl" />
                     <span className="ml-3 text-xl font-bold">FundRaiser</span>
                   </div>
                   <p className="mt-2 text-gray-400">
@@ -74,7 +81,7 @@ function App() {
                   </a>
                 </div>
               </div>
-              <div className="mt-8 text-center text-gray-400 text-sm">
+              <div className="mt-8 text-sm text-center text-gray-400">
                 &copy; {new Date().getFullYear()} FundRaiser Intern Program. All
                 rights reserved.
               </div>

@@ -63,45 +63,6 @@ const AdminDashboard = () => {
     }
   };
 
-  // Fetch referral tree
-  const fetchReferralTree = async () => {
-    try {
-      const users = await fetchUsers();
-      buildReferralTree(users);
-    } catch (err) {
-      toast.error("Failed to fetch referral tree");
-    }
-  };
-
-  // Build referral tree structure - FIXED VERSION
-  const buildReferralTree = (users) => {
-    const userMap = {};
-    const tree = [];
-
-    // Create a map of users by their ID
-    users.forEach((user) => {
-      userMap[user._id] = {
-        ...user,
-        children: [],
-      };
-    });
-
-    // Build the tree structure - FIXED REFERRER HANDLING
-    users.forEach((user) => {
-      // Handle both string IDs and populated referrer objects
-      const referrerId = user.referrer?._id || user.referrer;
-
-      if (referrerId && userMap[referrerId]) {
-        userMap[referrerId].children.push(userMap[user._id]);
-      } else {
-        tree.push(userMap[user._id]);
-      }
-    });
-
-    setReferralTree(tree);
-    console.log("Fixed referral tree:", tree);
-  };
-
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -109,7 +70,6 @@ const AdminDashboard = () => {
         // Fetch users first for the referral tree
         const users = await fetchUsers();
         console.log("Fetched users for tree:", users);
-        buildReferralTree(users);
 
         // Then fetch other data
         await fetchContacts();
@@ -130,7 +90,6 @@ const AdminDashboard = () => {
       try {
         await adminApi.delete(`/users/${userId}`);
         toast.success("User deleted successfully");
-        fetchReferralTree();
         fetchLeaderboard();
       } catch (err) {
         toast.error("Failed to delete user");
@@ -156,7 +115,6 @@ const AdminDashboard = () => {
     try {
       await adminApi.put(`/users/${userId}/amount`, { amount });
       toast.success("Amount updated successfully");
-      fetchReferralTree();
       fetchLeaderboard();
     } catch (err) {
       toast.error("Failed to update amount");
@@ -194,51 +152,6 @@ const AdminDashboard = () => {
         err.response?.data?.message || "Failed to change password"
       );
     }
-  };
-
-  // Render referral tree recursively
-  const renderTree = (node, depth = 0) => {
-    if (!node) return null;
-
-    return (
-      <div key={node._id} className="relative pl-6 mt-3">
-        {/* Vertical line */}
-        {depth > 0 && (
-          <div className="absolute top-0 bottom-0 left-0 w-px bg-gray-300"></div>
-        )}
-
-        {/* Node */}
-        <div className={`flex items-start ${depth > 0 ? "ml-4" : ""}`}>
-          {/* Horizontal line */}
-          {depth > 0 && (
-            <div className="absolute left-0 w-4 h-px bg-gray-300 top-1/2"></div>
-          )}
-
-          {/* User card */}
-          <div className="relative z-10 w-48 p-3 bg-white border rounded-lg shadow-sm">
-            <div className="text-sm font-medium">{node.name}</div>
-            <div className="mb-1 text-xs text-gray-500 truncate">
-              {node.email}
-            </div>
-            <div className="flex items-center justify-between mt-1">
-              <span className="px-2 py-1 text-xs font-semibold text-blue-800 bg-blue-100 rounded">
-                ₹{node.amountRaised}
-              </span>
-              <span className="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded">
-                {node.referralsCount || 0} refs
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Children */}
-        {node.children && node.children.length > 0 && (
-          <div className="mt-3">
-            {node.children.map((child) => renderTree(child, depth + 1))}
-          </div>
-        )}
-      </div>
-    );
   };
 
   return (
@@ -309,16 +222,6 @@ const AdminDashboard = () => {
         <div className="border-b border-gray-200">
           <nav className="flex -mb-px space-x-8">
             <button
-              onClick={() => setActiveTab("referralTree")}
-              className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === "referralTree"
-                  ? "border-red-500 text-red-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-              }`}
-            >
-              Referral Tree
-            </button>
-            <button
               onClick={() => setActiveTab("leaderboard")}
               className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
                 activeTab === "leaderboard"
@@ -360,103 +263,6 @@ const AdminDashboard = () => {
           </div>
         ) : (
           <>
-            {activeTab === "referralTree" && (
-              <div className="overflow-hidden bg-white rounded-lg shadow">
-                <div className="px-4 py-5 border-b border-gray-200 sm:px-6">
-                  <h3 className="text-lg font-medium text-gray-900">
-                    Referral Network
-                  </h3>
-                  <p className="mt-1 text-sm text-gray-500">
-                    Visual representation of referral relationships
-                  </p>
-                </div>
-
-                <div className="p-4">
-                  <div
-                    className="bg-gray-50 rounded-lg p-4 overflow-auto min-h-[300px]"
-                    ref={treeContainerRef}
-                  >
-                    {referralTree.length > 0 ? (
-                      <div className="flex flex-wrap">
-                        {referralTree.map((root) => renderTree(root))}
-                      </div>
-                    ) : users.length > 0 ? (
-                      <div className="w-full py-8 text-center">
-                        <div className="mb-4">
-                          <svg
-                            className="w-12 h-12 mx-auto text-gray-400"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                            />
-                          </svg>
-                        </div>
-                        <h3 className="mb-1 text-lg font-medium text-gray-900">
-                          Connected Users
-                        </h3>
-                        <p className="mb-3 text-gray-500">
-                          {users.length} users found but no referral
-                          relationships detected
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          This could be because:
-                        </p>
-                        <ul className="max-w-md mx-auto mt-1 text-sm text-left text-gray-500 list-disc list-inside">
-                          <li>No users have been referred yet</li>
-                          <li>Users haven't entered referral codes</li>
-                          <li>
-                            The referral relationships haven't been established
-                          </li>
-                        </ul>
-                      </div>
-                    ) : (
-                      <div className="w-full py-8 text-center">
-                        <div className="mb-4">
-                          <svg
-                            className="w-12 h-12 mx-auto text-gray-400"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
-                        </div>
-                        <h3 className="mb-1 text-lg font-medium text-gray-900">
-                          No Users Found
-                        </h3>
-                        <p className="text-gray-500">
-                          There are no users in the system yet
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                  <div className="mt-4 text-sm text-gray-600">
-                    <div className="flex items-center mb-2">
-                      <div className="w-4 h-4 mr-2 bg-blue-100 border border-blue-300 rounded"></div>
-                      <span>User node with amount raised and referrals</span>
-                    </div>
-                    <div className="flex items-center">
-                      <div className="relative w-4 h-px mr-2 bg-gray-300">
-                        <div className="absolute top-0 w-2 h-px transform rotate-90 bg-gray-300 -left-1"></div>
-                      </div>
-                      <span>Connection line showing referral relationship</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
             {/* Leaderboard Tab */}
             {activeTab === "leaderboard" && (
               <div className="overflow-hidden bg-white rounded-lg shadow">

@@ -59,21 +59,21 @@ const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-16">
+    <div className="min-h-screen py-16 bg-gray-50">
       <ToastContainer position="top-right" />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h1 className="text-4xl font-extrabold text-gray-900 mb-4">
+      <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+        <div className="mb-16 text-center">
+          <h1 className="mb-4 text-4xl font-extrabold text-gray-900">
             Contact Us
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="max-w-3xl mx-auto text-xl text-gray-600">
             Have questions? Our team is here to help!
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          <div className="bg-white rounded-3xl shadow-lg p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
+          <div className="p-8 bg-white shadow-lg rounded-3xl">
+            <h2 className="mb-6 text-2xl font-bold text-gray-900">
               Send us a message
             </h2>
 
@@ -83,7 +83,7 @@ const Contact = () => {
                   <div className="mb-6">
                     <label
                       htmlFor="name"
-                      className="block text-sm font-medium text-gray-700 mb-2"
+                      className="block mb-2 text-sm font-medium text-gray-700"
                     >
                       Full Name
                     </label>
@@ -102,7 +102,7 @@ const Contact = () => {
                   <div className="mb-6">
                     <label
                       htmlFor="email"
-                      className="block text-sm font-medium text-gray-700 mb-2"
+                      className="block mb-2 text-sm font-medium text-gray-700"
                     >
                       Email Address
                     </label>
@@ -123,7 +123,7 @@ const Contact = () => {
               <div className="mb-6">
                 <label
                   htmlFor="message"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="block mb-2 text-sm font-medium text-gray-700"
                 >
                   Your Message
                 </label>
@@ -150,16 +150,16 @@ const Contact = () => {
           </div>
 
           <div>
-            <div className="bg-white rounded-3xl shadow-lg p-8 mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            <div className="p-8 mb-8 bg-white shadow-lg rounded-3xl">
+              <h2 className="mb-6 text-2xl font-bold text-gray-900">
                 Contact Information
               </h2>
 
               <div className="space-y-6">
                 <div className="flex items-start">
-                  <div className="flex-shrink-0 bg-indigo-100 p-3 rounded-lg">
+                  <div className="flex-shrink-0 p-3 bg-indigo-100 rounded-lg">
                     <svg
-                      className="h-6 w-6 text-indigo-600"
+                      className="w-6 h-6 text-indigo-600"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -181,9 +181,9 @@ const Contact = () => {
                 </div>
 
                 <div className="flex items-start">
-                  <div className="flex-shrink-0 bg-indigo-100 p-3 rounded-lg">
+                  <div className="flex-shrink-0 p-3 bg-indigo-100 rounded-lg">
                     <svg
-                      className="h-6 w-6 text-indigo-600"
+                      className="w-6 h-6 text-indigo-600"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -198,14 +198,14 @@ const Contact = () => {
                   </div>
                   <div className="ml-4">
                     <h3 className="text-lg font-medium text-gray-900">Phone</h3>
-                    <p className="mt-1 text-gray-600">+91 98765 43210</p>
+                    <p className="mt-1 text-gray-600">+91 9999999999</p>
                   </div>
                 </div>
 
                 <div className="flex items-start">
-                  <div className="flex-shrink-0 bg-indigo-100 p-3 rounded-lg">
+                  <div className="flex-shrink-0 p-3 bg-indigo-100 rounded-lg">
                     <svg
-                      className="h-6 w-6 text-indigo-600"
+                      className="w-6 h-6 text-indigo-600"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -236,10 +236,6 @@ const Contact = () => {
                   </div>
                 </div>
               </div>
-            </div>
-
-            <div className="bg-gray-200 border-2 border-dashed rounded-xl w-full h-80 flex items-center justify-center text-gray-500">
-              <p>Map Location</p>
             </div>
           </div>
         </div>

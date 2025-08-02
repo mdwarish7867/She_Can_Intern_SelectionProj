@@ -117,12 +117,18 @@ router.get("/leaderboard", authMiddleware, async (req, res) => {
 // Get all users for referral tree
 router.get("/users", authMiddleware, async (req, res) => {
   try {
-    // Fetch all users with their referrer information
     const users = await Intern.find()
-      .populate("referrer", "name") // Populate referrer name
-      .select("name email amountRaised referralsCount referrer");
+      .populate("referrer", "_id") // Only get referrer ID
+      .select("name email amountRaised referralsCount referrer")
+      .lean(); // Return plain JS objects
       
-    res.json(users);
+    // Convert referrer to ID string
+    const formattedUsers = users.map(user => ({
+      ...user,
+      referrer: user.referrer?._id?.toString() || user.referrer
+    }));
+    
+    res.json(formattedUsers);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
