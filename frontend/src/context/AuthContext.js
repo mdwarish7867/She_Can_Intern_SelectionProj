@@ -32,9 +32,11 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = (userData) => {
-    setUser(userData);
-    localStorage.setItem("user", JSON.stringify(userData));
-  };
+    // Inside login function
+setUser(userData);
+localStorage.setItem("user", JSON.stringify(userData));
+navigate("/dashboard");
+};
 
   const logout = () => {
     setUser(null);

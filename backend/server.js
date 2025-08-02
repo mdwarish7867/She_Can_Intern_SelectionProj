@@ -41,11 +41,12 @@ app.use("/api/admin", adminRoutes);
 // Serve frontend in production
 if (process.env.NODE_ENV === "production") {
   // Set static folder
-  app.use(express.static(path.join(__dirname, "../frontend/build")));
+  const frontendPath = path.join(__dirname, "../frontend/build");
+  app.use(express.static(frontendPath));
 
-  // Handle React routing
+  // Handle React routing - return all requests to React app
   app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "../frontend/build", "index.html"));
+    res.sendFile(path.join(frontendPath, "index.html"));
   });
 }
 
