@@ -12,11 +12,41 @@ const adminRoutes = require("./routes/adminRoutes");
 const app = express();
 
 // Middleware
+// Replace CORS middleware with:
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  "http://localhost:3000"
+];
+
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      
+      if (allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
+  })
+);
+const session = require("express-session");
+
+// Add after CORS middleware
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "your-secret-key",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "none",
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    },
   })
 );
 app.use(express.json());
@@ -37,13 +67,7 @@ mongoose
 app.use("/api/interns", internRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/admin", adminRoutes);
-app.get("/admin/login", (req, res) => {
-  res.sendFile(path.resolve(__dirname, "../frontend/build", "index.html"));
-});
 
-app.get("/admin/dashboard", (req, res) => {
-  res.sendFile(path.resolve(__dirname, "../frontend/build", "index.html"));
-});
 // Serve frontend in production
 if (process.env.NODE_ENV === "production") {
   const __dirname = path.resolve();

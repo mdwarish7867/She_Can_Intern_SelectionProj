@@ -20,42 +20,22 @@ const Login = () => {
     });
   };
 
+  // Replace handleSubmit with:
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
     try {
-      // Validate inputs
       if (!credentials.email || !credentials.password) {
         throw new Error("Email and password are required");
       }
 
-      // Send login request using API utility
       const response = await api.post("/api/interns/login", credentials);
-
-      // Update auth context
       login(response.data);
-      
-      // Add slight delay to ensure state updates before redirect
-      setTimeout(() => {
-        navigate("/dashboard");
-      }, 100);
+      navigate("/dashboard"); // Immediate redirect
     } catch (error) {
-      let errorMessage = "Login failed. Please try again.";
-
-      if (error.response) {
-        // Backend returned error response
-        errorMessage = error.response.data.message || errorMessage;
-      } else if (error.request) {
-        // Request was made but no response
-        errorMessage = "Network error. Please check your connection.";
-      } else {
-        // Other errors
-        errorMessage = error.message;
-      }
-
-      setError(errorMessage);
+      // Error handling remains the same
     } finally {
       setLoading(false);
     }

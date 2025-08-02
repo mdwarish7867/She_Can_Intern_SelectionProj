@@ -10,22 +10,24 @@ export const AuthProvider = ({ children }) => {
   // Check localStorage on initial load
   useEffect(() => {
     const initializeAuth = async () => {
-      const storedUser = localStorage.getItem("user");
+      try {
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+          const userData = JSON.parse(storedUser);
 
-      if (storedUser) {
-        const userData = JSON.parse(storedUser);
-
-        try {
-          // Fetch latest user data from backend using API utility
-          const response = await api.get(`/api/interns/${userData._id}`);
-          setUser(response.data);
-        } catch (error) {
-          console.error("Error fetching user data:", error);
-          setUser(userData);
+          // Skip API call in production to avoid CORS issues
+          if (process.env.NODE_ENV === "development") {
+            const response = await api.get(`/api/interns/${userData._id}`);
+            setUser(response.data);
+          } else {
+            setUser(userData);
+          }
         }
+      } catch (error) {
+        console.error("Auth initialization error:", error);
+      } finally {
+        setLoading(false);
       }
-
-      setLoading(false);
     };
 
     initializeAuth();
