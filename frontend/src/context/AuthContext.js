@@ -10,24 +10,18 @@ export const AuthProvider = ({ children }) => {
   // Check localStorage on initial load
   useEffect(() => {
     const initializeAuth = async () => {
-      try {
-        const storedUser = localStorage.getItem("user");
-        if (storedUser) {
-          const userData = JSON.parse(storedUser);
+      const storedUser = localStorage.getItem("user");
 
-          // Skip API call in production to avoid CORS issues
-          if (process.env.NODE_ENV === "development") {
-            const response = await api.get(`/api/interns/${userData._id}`);
-            setUser(response.data);
-          } else {
-            setUser(userData);
-          }
+      if (storedUser) {
+        try {
+          const userData = JSON.parse(storedUser);
+          setUser(userData);
+        } catch (error) {
+          console.error("Failed to parse user data", error);
+          localStorage.removeItem("user");
         }
-      } catch (error) {
-        console.error("Auth initialization error:", error);
-      } finally {
-        setLoading(false);
       }
+      setLoading(false);
     };
 
     initializeAuth();

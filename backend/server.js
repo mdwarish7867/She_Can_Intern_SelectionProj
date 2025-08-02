@@ -20,18 +20,10 @@ const allowedOrigins = [
 
 app.use(
   cors({
-    origin: function (origin, callback) {
-      // Allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) return callback(null, true);
-      
-      if (allowedOrigins.indexOf(origin) !== -1) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: process.env.FRONTEND_URL,
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 const session = require("express-session");
@@ -70,11 +62,15 @@ app.use("/api/admin", adminRoutes);
 
 // Serve frontend in production
 if (process.env.NODE_ENV === "production") {
-  const __dirname = path.resolve();
-  app.use(express.static(path.join(__dirname, "../frontend/build")));
+  // Resolve the absolute path to frontend build
+  const frontendPath = path.resolve(__dirname, "../frontend/build");
 
+  // Serve static files
+  app.use(express.static(frontendPath));
+
+  // Handle React routing - return all requests to React app
   app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "../frontend/build", "index.html"));
+    res.sendFile(path.join(frontendPath, "index.html"));
   });
 }
 

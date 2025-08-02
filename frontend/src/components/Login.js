@@ -27,15 +27,13 @@ const Login = () => {
     setError("");
 
     try {
-      if (!credentials.email || !credentials.password) {
-        throw new Error("Email and password are required");
-      }
+      // Remove email/password validation - backend handles this
 
       const response = await api.post("/api/interns/login", credentials);
       login(response.data);
       navigate("/dashboard"); // Immediate redirect
     } catch (error) {
-      // Error handling remains the same
+      // ... (keep your existing error handling)
     } finally {
       setLoading(false);
     }
