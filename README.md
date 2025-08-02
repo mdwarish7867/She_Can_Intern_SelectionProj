@@ -1,8 +1,4 @@
-Here’s your **final README.md** updated with the **images/screenshots** you've provided. You can upload these images in a folder named `/screenshots/` or `/assets/` inside your repository and link them in markdown.
 
----
-
-```md
 # 🚀 [Live Demo](https://she-can-intern-proj.onrender.com/) — She Can Intern Selection Portal (Full Stack Project)
 
 ## 📋 Project Title: **Fundraising Intern Selection Portal**
