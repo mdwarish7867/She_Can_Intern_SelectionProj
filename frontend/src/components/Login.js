@@ -33,8 +33,8 @@ const Login = () => {
 
       // Send login request
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/interns/login`,
-        credentials
+         `${process.env.REACT_APP_BACKEND_URL}/api/interns/login`,
+         credentials
       );
 
       // Update auth context
