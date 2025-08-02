@@ -37,16 +37,20 @@ mongoose
 app.use("/api/interns", internRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/admin", adminRoutes);
+app.get("/admin/login", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "../frontend/build", "index.html"));
+});
 
+app.get("/admin/dashboard", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "../frontend/build", "index.html"));
+});
 // Serve frontend in production
 if (process.env.NODE_ENV === "production") {
-  // Set static folder
-  const frontendPath = path.join(__dirname, "../frontend/build");
-  app.use(express.static(frontendPath));
+  const __dirname = path.resolve();
+  app.use(express.static(path.join(__dirname, "../frontend/build")));
 
-  // Handle React routing - return all requests to React app
   app.get("*", (req, res) => {
-    res.sendFile(path.join(frontendPath, "index.html"));
+    res.sendFile(path.resolve(__dirname, "../frontend/build", "index.html"));
   });
 }
 
