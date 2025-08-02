@@ -149,7 +149,7 @@ router.put("/:id/password", async (req, res) => {
 });
 
 // Get intern data
-router.get('/:id([a-fA-F0-9]{24})', async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
     const intern = await Intern.findById(req.params.id).select("-password");
 
