@@ -13,10 +13,7 @@ const allowedOrigins = [process.env.FRONTEND_URL, "http://localhost:3000"];
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow requests with no origin (like mobile apps)
-      if (!origin) return callback(null, true);
-
-      if (allowedOrigins.includes(origin)) {
+      if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
         callback(new Error("Not allowed by CORS"));
@@ -82,8 +79,26 @@ app.get("/debug", (req, res) => {
 // Serve frontend in production
 if (process.env.NODE_ENV === "production") {
   const frontendPath = path.resolve(__dirname, "../frontend/build");
+
+  // Serve static files
   app.use(express.static(frontendPath));
 
+  // Handle client-side routing for React app
+  app.get(
+    [
+      "/",
+      "/admin/login",
+      "/admin/dashboard",
+      "/login",
+      "/signup",
+      "/dashboard",
+    ],
+    (req, res) => {
+      res.sendFile(path.join(frontendPath, "index.html"));
+    }
+  );
+
+  // Catch-all route
   app.get("*", (req, res) => {
     res.sendFile(path.join(frontendPath, "index.html"));
   });
