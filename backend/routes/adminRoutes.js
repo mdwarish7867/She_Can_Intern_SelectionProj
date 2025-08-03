@@ -6,32 +6,25 @@ const Contact = require("../models/contact");
 const bcrypt = require("bcryptjs");
 const authMiddleware = require("../middleware/authMiddleware");
 
-// Admin login
-router.post("/login", async (req, res) => {
-  try {
-    const { username, password } = req.body;
+// Admin login route
+router.post("/login", (req, res) => {
+  const { username, password } = req.body;
 
-    // Find admin by username
-    const admin = await Admin.findOne({ username });
-    if (!admin) {
-      return res.status(401).json({ message: "Invalid credential 1" });
-    }
-
-    // Compare passwords
-    const isMatch = await admin.comparePassword(password);
-    if (!isMatch) {
-      return res.status(401).json({ message: "Invalid credentials  2" });
-    }
-
-    // Return success response
-    res.json({
+  // Verify against environment variables
+  if (
+    username === process.env.ADMIN_USERNAME &&
+    password === process.env.ADMIN_PASSWORD
+  ) {
+    return res.json({
       success: true,
       message: "Admin login successful",
     });
-  } catch (err) {
-    console.error("Admin login error:", err);
-    res.status(500).json({ message: "Server error" });
   }
+
+  res.status(401).json({
+    success: false,
+    message: "Invalid admin credentials",
+  });
 });
 
 // Delete user

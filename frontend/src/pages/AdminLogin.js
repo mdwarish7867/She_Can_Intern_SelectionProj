@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../utils/api"; // Use the API utility
 
 const AdminLogin = () => {
   const navigate = useNavigate();
@@ -24,29 +24,16 @@ const AdminLogin = () => {
     setLoading(true);
     setError("");
 
-    // Add basic validation
-    if (!credentials.username.trim() || !credentials.password.trim()) {
-      setError("Both fields are required");
-      setLoading(false);
-      return;
-    }
-
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/admin/login`,
-        credentials
-      );
+      // Use the API utility for consistent headers
+      const response = await api.post("/api/admin/login", credentials);
 
       if (response.data.success) {
         // Store admin credentials in session storage
-        const authString = btoa(
-          `${credentials.username}:${credentials.password}`
-        );
-        sessionStorage.setItem("adminAuth", authString);
-
+        sessionStorage.setItem("adminAuth", "true");
         navigate("/admin/dashboard");
       } else {
-        setError("Invalid credentials");
+        setError(response.data.message || "Invalid credentials");
       }
     } catch (err) {
       if (err.response) {

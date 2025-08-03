@@ -83,22 +83,7 @@ if (process.env.NODE_ENV === "production") {
   // Serve static files
   app.use(express.static(frontendPath));
 
-  // Handle client-side routing for React app
-  app.get(
-    [
-      "/",
-      "/admin/login",
-      "/admin/dashboard",
-      "/login",
-      "/signup",
-      "/dashboard",
-    ],
-    (req, res) => {
-      res.sendFile(path.join(frontendPath, "index.html"));
-    }
-  );
-
-  // Catch-all route
+  // Handle client-side routing - return all requests to React app
   app.get("*", (req, res) => {
     res.sendFile(path.join(frontendPath, "index.html"));
   });

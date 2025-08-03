@@ -20,15 +20,27 @@ import Leaderboard from "./pages/Leaderboard";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import UpdatePassword from "./pages/UpdatePassword";
-// ProtectedRoute component for authenticated routes
+
+// ProtectedRoute for regular users
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="w-16 h-16 border-t-4 border-blue-500 rounded-full animate-spin"></div>
+      </div>
+    );
   }
 
   return user ? children : <Navigate to="/login" replace />;
+};
+
+// ProtectedRoute for admin users
+const ProtectedAdminRoute = ({ children }) => {
+  const isAuthenticated = sessionStorage.getItem("adminAuth") === "true";
+
+  return isAuthenticated ? children : <Navigate to="/admin/login" replace />;
 };
 
 function App() {
@@ -46,7 +58,14 @@ function App() {
               <Route path="/signup" element={<Signup />} />
               <Route path="/leaderboard" element={<Leaderboard />} />
               <Route path="/admin/login" element={<AdminLogin />} />
-              <Route path="/admin/dashboard" element={<AdminDashboard />} />
+              <Route
+                path="/admin/dashboard"
+                element={
+                  <ProtectedAdminRoute>
+                    <AdminDashboard />
+                  </ProtectedAdminRoute>
+                }
+              />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/update-password" element={<UpdatePassword />} />
               <Route
