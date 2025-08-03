@@ -26,17 +26,18 @@ const Login = () => {
     setLoading(true);
     setError("");
 
-    try {
-      // Remove email/password validation - backend handles this
-
-      const response = await api.post("/api/interns/login", credentials);
-      login(response.data);
-      navigate("/dashboard"); // Immediate redirect
-    } catch (error) {
-      // ... (keep your existing error handling)
-    } finally {
-      setLoading(false);
-    }
+    
+  try {
+    const response = await api.post("/api/interns/login", credentials, {
+      withCredentials: true,
+    });
+    login(response.data);
+    navigate("/dashboard"); // Immediate redirect
+  } catch (error) {
+    // ... (keep your existing error handling)
+  } finally {
+    setLoading(false);
+  }
   };
 
   return (

@@ -1,4 +1,3 @@
-
 # 🚀 [Live Demo](https://she-can-intern-proj.onrender.com/) — She Can Intern Selection Portal (Full Stack Project)
 
 ## 📋 Project Title: **Fundraising Intern Selection Portal**
@@ -26,10 +25,10 @@ This portal enables interns to register with referral codes, track their referra
 
 ## 🏗️ Tech Stack Overview
 
-| Frontend                          | Backend               | Database      | Deployment                |
-| --------------------------------- | --------------------- | ------------- | ------------------------- |
-| React.js, Tailwind CSS, AOS.js    | Node.js, Express.js   | MongoDB Atlas | Render (Full Stack Deploy) |
-| React Toastify (Notifications)    | Mongoose ORM          |               |                           |
+| Frontend                       | Backend             | Database      | Deployment                 |
+| ------------------------------ | ------------------- | ------------- | -------------------------- |
+| React.js, Tailwind CSS, AOS.js | Node.js, Express.js | MongoDB Atlas | Render (Full Stack Deploy) |
+| React Toastify (Notifications) | Mongoose ORM        |               |                            |
 
 ---
 
@@ -54,30 +53,30 @@ This portal enables interns to register with referral codes, track their referra
 ├── README.md
 └── package.json               // Project Dependencies
 
-````
+```
 
 ---
 
 ## 🖼️ Screenshots & Previews
 
-| **Dashboard View**                   | **Leaderboard View**                    |
-| ------------------------------------ | -------------------------------------- |
+| **Dashboard View**                        | **Leaderboard View**                                   |
+| ----------------------------------------- | ------------------------------------------------------ |
 | ![Dashboard](./screenshots/dashboard.png) | ![Leaderboard User](./screenshots/leaderboardUser.png) |
 
-| **Home Page**                         | **Register Page**                       |
-| ------------------------------------- | -------------------------------------- |
-| ![Home](./screenshots/home.png)       | ![Register](./screenshots/register.png) |
+| **Home Page**                   | **Register Page**                       |
+| ------------------------------- | --------------------------------------- |
+| ![Home](./screenshots/home.png) | ![Register](./screenshots/register.png) |
 
-| **Login Page**                        | **Contact Messages (Admin View)**      |
-| ------------------------------------- | -------------------------------------- |
-| ![Login](./screenshots/login.png)     | ![Admin Messages](./screenshots/adminMessege.png) |
+| **Login Page**                    | **Contact Messages (Admin View)**                 |
+| --------------------------------- | ------------------------------------------------- |
+| ![Login](./screenshots/login.png) | ![Admin Messages](./screenshots/adminMessege.png) |
 
-| **Admin Leaderboard View**            | **Admin Password Update View**         |
-| ------------------------------------- | -------------------------------------- |
+| **Admin Leaderboard View**                               | **Admin Password Update View**                     |
+| -------------------------------------------------------- | -------------------------------------------------- |
 | ![Admin Leaderboard](./screenshots/adminleaderboard.png) | ![Admin Password](./screenshots/adminPassword.png) |
 
-| **Admin Login Page**                  |
-| ------------------------------------- |
+| **Admin Login Page**                         |
+| -------------------------------------------- |
 | ![Admin Login](./screenshots/adminlogin.png) |
 
 ---
@@ -85,13 +84,14 @@ This portal enables interns to register with referral codes, track their referra
 ## 🔑 Environment Variables Setup
 
 ### Backend (`/backend/.env`)
+
 ```env
 MONGO_URI=your_mongodb_connection_string
 PORT=5000
 ADMIN_USERNAME=your_admin_username
 ADMIN_PASSWORD=your_admin_password
 FRONTEND_URL=http://localhost:3000
-````
+```
 
 ### Frontend (`/frontend/.env`)
 
@@ -103,17 +103,19 @@ REACT_APP_BACKEND_URL=http://localhost:5000
 
 ## 🛡️ Admin Credentials Setup Guide
 
-1. Define **`ADMIN_USERNAME`** and **`ADMIN_PASSWORD`** in `/backend/.env`.
-2. Run the **Admin Seeder Script**:
+1. Define **`ADMIN_USERNAME`** and **`ADMIN_PASSWORD`** in `/backend/.env` and also **`MONGO_URI`\*\***`PORT`\***\*`FRONTEND_URL`**
+2. Define **`ADMIN_USERNAME`** and **`REACT_APP_BACKEND_URL`** in `/frontend/.env`.
+3. Run the **Admin Seeder Script**:
 
    ```bash
    cd backend
    node seedAdmin.js
    ```
 
-   * Creates admin if not exists.
-   * Updates password if admin exists but password differs.
-3. Access **Admin Panel** at:
+   - Creates admin if not exists.
+   - Updates password if admin exists but password differs.
+
+4. Access **Admin Panel** at:
 
    ```
    /admin/login
@@ -148,10 +150,10 @@ npm start
 
 ## 🚀 Deployment Links
 
-| Service            | Live URL                                                                                                                                |
-| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
-| Frontend & Backend | [https://she-can-intern-proj.onrender.com/](https://she-can-intern-proj.onrender.com/)                                                  |
-| GitHub Repository  | [https://github.com/mdwarish7867/She\_Can\_Intern\_SelectionProj.git](https://github.com/mdwarish7867/She_Can_Intern_SelectionProj.git) |
+| Service            | Live URL                                                                                                                             |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Frontend & Backend | [https://she-can-intern-proj.onrender.com/](https://she-can-intern-proj.onrender.com/)                                               |
+| GitHub Repository  | [https://github.com/mdwarish7867/She_Can_Intern_SelectionProj.git](https://github.com/mdwarish7867/She_Can_Intern_SelectionProj.git) |
 
 ---
 
@@ -159,31 +161,32 @@ npm start
 
 ### ✅ User Module:
 
-* Registration with referral code.
-* Dashboard displaying referral code, earnings, leaderboard rank.
-* Change Password & Forgot/Reset Password.
-* Contact Us Form with dynamic fields.
+- Registration with referral code.(Try This SW9D8B)
+- Dashboard displaying referral code, earnings, leaderboard rank.
+- Change Password & Forgot/Reset Password.
+- Contact Us Form with dynamic fields.
+- If Sometimes Deployed Not Work Then Try Locally Please
 
 ### ✅ Admin Module:
 
-* Admin Login (Environment-based Credentials).
-* User Management (View, Delete, Update Funding).
-* Contact Message Management.
-* Password Change functionality.
+- Admin Login (Environment-based Credentials).
+- User Management (View, Delete, Update Funding).
+- Contact Message Management.
+- Password Change functionality.
 
 ### ✅ Referral & Funding Logic:
 
-* Every new referral increments the referrer's total funding by ₹500.
-* Leaderboard dynamically ranks based on total raised funds.
+- Every new referral increments the referrer's total funding by ₹500.
+- Leaderboard dynamically ranks based on total raised funds.
 
 ---
 
 ## 📝 To-Do (Enhancements Roadmap)
 
-* SMTP Email Integration for Forgot/Reset Password.
-* Pagination & Filtering in Admin Panels.
-* Enhanced UI for mobile devices.
-* Advanced analytics on dashboard.
+- SMTP Email Integration for Forgot/Reset Password.
+- Pagination & Filtering in Admin Panels.
+- Enhanced UI for mobile devices.
+- Advanced analytics on dashboard.
 
 ---
 

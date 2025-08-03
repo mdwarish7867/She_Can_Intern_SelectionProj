@@ -52,6 +52,16 @@ router.post("/signup", async (req, res) => {
 });
 
 // Login intern
+// Handle preflight for login
+router.options("/login", (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", process.env.FRONTEND_URL);
+  res.setHeader("Access-Control-Allow-Methods", "POST");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.status(204).send();
+});
+
+// Login intern
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -78,6 +88,10 @@ router.post("/login", async (req, res) => {
     // Return user data without password
     const userData = intern.toObject();
     delete userData.password;
+
+    // Set session data
+    req.session.userId = userData._id;
+    console.log("Session created:", req.session);
 
     res.json(userData);
   } catch (err) {

@@ -1,34 +1,37 @@
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
-const path = require("path"); // Make sure to require path
+const path = require("path");
 const cors = require("cors");
-
-// Routes
-const internRoutes = require("./routes/internRoutes");
-const contactRoutes = require("./routes/contactRoutes");
-const adminRoutes = require("./routes/adminRoutes");
+const session = require("express-session");
 
 const app = express();
 
-// Middleware
-// Replace CORS middleware with:
-const allowedOrigins = [
-  process.env.FRONTEND_URL,
-  "http://localhost:3000"
-];
+// Enhanced CORS configuration
+const allowedOrigins = [process.env.FRONTEND_URL, "http://localhost:3000"];
 
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-const session = require("express-session");
 
-// Add after CORS middleware
+// Handle preflight requests globally
+app.options("*", cors());
+
+// Session middleware
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "your-secret-key",
@@ -36,11 +39,12 @@ app.use(
     saveUninitialized: false,
     cookie: {
       secure: process.env.NODE_ENV === "production",
-      sameSite: "none",
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 24 * 60 * 60 * 1000,
     },
   })
 );
+
 app.use(express.json());
 
 // Connect to MongoDB
@@ -52,23 +56,34 @@ mongoose
   .then(() => console.log("MongoDB connected"))
   .catch((err) => {
     console.error("MongoDB connection error:", err);
-    process.exit(1); // Exit on connection failure
+    process.exit(1);
   });
 
-// API Routes
+// Routes
+const internRoutes = require("./routes/internRoutes");
+const contactRoutes = require("./routes/contactRoutes");
+const adminRoutes = require("./routes/adminRoutes");
+
 app.use("/api/interns", internRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/admin", adminRoutes);
 
+// Debug endpoint
+app.get("/debug", (req, res) => {
+  res.json({
+    status: "active",
+    timestamp: new Date(),
+    environment: process.env.NODE_ENV,
+    frontendUrl: process.env.FRONTEND_URL,
+    mongoConnected: mongoose.connection.readyState === 1,
+  });
+});
+
 // Serve frontend in production
 if (process.env.NODE_ENV === "production") {
-  // Resolve the absolute path to frontend build
   const frontendPath = path.resolve(__dirname, "../frontend/build");
-
-  // Serve static files
   app.use(express.static(frontendPath));
 
-  // Handle React routing - return all requests to React app
   app.get("*", (req, res) => {
     res.sendFile(path.join(frontendPath, "index.html"));
   });
